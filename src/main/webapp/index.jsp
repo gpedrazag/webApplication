@@ -48,15 +48,7 @@
             </table>              
         </form>
         <br>
-<%-- 
-    <c:forEach items="${allStudents}" var="stud">
-        <c:out value="${stud.id}"></c:out>
-        <c:out value="${stud.nombre}"></c:out>
-        <c:out value="${stud.apellido}"></c:out>
-        <c:out value="${stud.semestre}"></c:out>
-       Iterando... ${allStudents}
-    </c:forEach>
- --%>       
+   
         <table border="1">
             <th>ID</th>
             <th>First Name</th>
