@@ -17,6 +17,11 @@ public class Estudiante {
     //Constructor
 
     public Estudiante() {
+        this.id=0;
+        this.nombre=" ";
+        this.apellido=" ";
+        this.semestre=0;
+        
     }
     
     

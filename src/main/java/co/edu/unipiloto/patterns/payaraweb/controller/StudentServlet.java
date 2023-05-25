@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package co.edu.unipiloto.patterns.payaraweb;
+package co.edu.unipiloto.patterns.payaraweb.controller;
 
 import co.edu.unipiloto.patterns.payaraweb.model.Estudiante;
 import co.edu.unipiloto.patterns.payaraweb.model.StudentDAO;
@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author USUARIO
  */
 public class StudentServlet extends HttpServlet {
-    
+
     private StudentDAO studentDAO;
     private List<Estudiante> lista;
     private Estudiante student;
@@ -37,71 +37,66 @@ public class StudentServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         studentDAO = new StudentDAOImplementation();
         lista = new ArrayList<Estudiante>();
-        
-        String idStr = request.getParameter("studentId");
-        int id = Integer.parseInt(idStr);
-        
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
-        
-        String yearStr = request.getParameter("yearLevel");
-        int yearLevel = Integer.parseInt(yearStr);
-        
+
+        String firstName = " ", lastName = " ", resultado = " ";
+        String idStr = " ", yearStr = "0";
+        int id = 0, yearLevel = 0;
+
         String accion = request.getParameter("action");
-        
+
+        idStr = request.getParameter("studentId");
+        id = Integer.parseInt(idStr);
+        if (!accion.equals("Search")) {
+            firstName = request.getParameter("firstName");
+            lastName = request.getParameter("lastName");
+
+            yearStr = request.getParameter("yearLevel");
+            yearLevel = Integer.parseInt(yearStr);
+        }
+
         if (accion.equals("Add")) {
             student = new Estudiante(id, firstName, lastName, yearLevel);
-            if (studentDAO.searchStudent(id)==null) {
+            if (studentDAO.searchStudent(id) == null) {
                 studentDAO.addStudent(student);
-                
+                resultado = "ADD ok";
             }
         }
         if (accion.equals("Edit")) {
             student = new Estudiante(id, firstName, lastName, yearLevel);
-            studentDAO.updateStudent(student);
+            if (studentDAO.searchStudent(id) != null) {
+                System.out.println("Actualizando id " + id + " Nombre " + firstName + " Apellido " + lastName + " Semestre " + yearLevel);
+                studentDAO.updateStudent(student);
+                resultado = "EDIT ok";
+            } else {
+                System.out.println("ID no encontrado" + id + " NO se actualiza el registro ");
+                resultado="Id no encontrado";
+            }
         }
         if (accion.equals("Delete")) {
             student = new Estudiante(id, firstName, lastName, yearLevel);
             studentDAO.deleteStudent(student);
         }
         if (accion.equals("Search")) {
-            
-            student= studentDAO.searchStudent(id);
-            if (student==null)
-                student=new Estudiante();
+
+            student = studentDAO.searchStudent(id);
+            if (student == null) {
+                resultado = "No encontrado";
+                student = new Estudiante();
+            }
         }
 
-        //lista.add(student);
-        //lista.add(new Estudiante (1,"Pedro","Picapiedra",3));
-        //studentDAO.addStudent(student);
+        //Consultar la lista de estudiantes
         lista = studentDAO.getAllStudents();
-        //studentFacade.create(student);
-        request.setAttribute("estado", accion);
-        //String.valueOf(lista.get(0).getSemestre()));
-        
+        //Asignar valores a variables en index.jsp
+        request.setAttribute("estado", resultado);
         request.setAttribute("student", student);
         request.setAttribute("allStudents", lista);
-        //studentDAO.getAllStudents()
         request.getRequestDispatcher("index.jsp").forward(request, response);
 
-        /*       response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            // TODO output your page here. You may use following sample code. 
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet StudentServlet</title>");            
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet StudentServlet at " + request.getContextPath() + "</h1>");
-            out.println( "Hola "+idStr+" "+firstName+" "+lastName);
-            out.println("</body>");
-            out.println("</html>");
-        }
-         */
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

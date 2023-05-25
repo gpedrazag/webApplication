@@ -72,7 +72,7 @@ public class StudentDAOImplementation implements StudentDAO {
         }
         List<Estudiante> lista = new ArrayList();
 
-        sentencia = "SELECT * FROM APP.ESTUDIANTE"; //SELECT * FROM APP.MICRO_MARKET 
+        sentencia = "SELECT * FROM APP.ESTUDIANTE";
         try {
             //Crear una sentencia
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -85,8 +85,6 @@ public class StudentDAOImplementation implements StudentDAO {
             }
             System.out.println(rs.first() + " " + rs.getRow() + " " + rs.getCursorName());
             do {
-                //int id=rs.getInt(1);
-                //System.out.println("rs next "+rs.getString(1)+" "+rs.getDouble(2));
 
                 int id = rs.getInt(1);
                 System.out.println("Id " + id);
@@ -96,12 +94,7 @@ public class StudentDAOImplementation implements StudentDAO {
                 System.out.println("Apellido " + apellido);
                 int semestre = rs.getInt(4);
                 System.out.println("Semestre " + semestre);
-                /*              String cargo = rs.getString(5);
-                System.out.println("Cargo " + cargo);
-               
-                Double salario = rs.getDouble(6);
-                System.out.println("Salario " + salario);
-                 */
+                //Convierte el result set a un Array List
                 lista.add(new Estudiante(id, nombre, apellido, semestre));
                 System.out.println(id + "\t\t" + nombre + "\t\t" + apellido);
             } while (rs.next());
@@ -119,6 +112,24 @@ public class StudentDAOImplementation implements StudentDAO {
         if (connection == null) {
             conectar();
         }
+        try {
+            sentencia = "UPDATE APP.ESTUDIANTE SET "
+                    + "FIRSTNAME = '" + est.getNombre() + "',"
+                    + "LASTNAME = '" + est.getApellido() + "',"
+                    + "YEARLEVEL = " + est.getSemestre()
+                    + " WHERE STUDENTID = " + est.getId();
+           
+            System.out.println("Sentencia " + sentencia);
+            //Crear una sentencia
+            statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+
+            //Crear un objeto ResultSet para guardar lo obtenido
+            //y ejecutar la sentencia SQL
+            statement.executeUpdate(sentencia);
+        } catch (SQLException sqle) {
+            System.out.println("Error en " + sqle.getSQLState());
+        }
     }
 
     @Override
@@ -134,7 +145,7 @@ public class StudentDAOImplementation implements StudentDAO {
             conectar();
         }
         System.out.println("Guardar estudiante");
-        //est=new Estudiante(4,"Pedro","Lozano",1);
+
         try {
             sentencia = "INSERT INTO estudiante VALUES("
                     + est.getId() + ",'"
@@ -163,18 +174,20 @@ public class StudentDAOImplementation implements StudentDAO {
         if (connection == null) {
             conectar();
         }
-        sentencia = "SELECT * FROM APP.ESTUDIANTE WHERE ID=" + idBuscar + ";";
-
+        sentencia = "SELECT * FROM APP.ESTUDIANTE WHERE STUDENTID=" + idBuscar + "";
+        System.out.println("Sentencia: " + sentencia);
         try {
 
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            System.out.println("Ejecutando query");
             rs = statement.executeQuery(sentencia);
-            System.out.println("consulta individual ok");
+            //no devuelve un resultado
             if (rs == null) {
-                System.out.println("vacio");
+                System.out.println("RS retorna vacio");
             }
+            //Se coloca en la primer posicion del result set
             rs.first();
-            // System.out.println(rs.first() + " " + rs.getRow() + " " + rs.getCursorName());
+            //Extrae los datos de cada fila del result set
             int id = rs.getInt(1);
             System.out.println("Id " + id);
             String nombre = rs.getString(2);
@@ -183,12 +196,7 @@ public class StudentDAOImplementation implements StudentDAO {
             System.out.println("Apellido " + apellido);
             int semestre = rs.getInt(4);
             System.out.println("Semestre " + semestre);
-            /*              String cargo = rs.getString(5);
-                System.out.println("Cargo " + cargo);
-               
-                Double salario = rs.getDouble(6);
-                System.out.println("Salario " + salario);
-             */
+
             est = new Estudiante(id, nombre, apellido, semestre);
             System.out.println(id + "\t\t" + nombre + "\t\t" + apellido);
         } catch (SQLException sqle) {
